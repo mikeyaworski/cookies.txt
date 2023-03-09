@@ -38,4 +38,4 @@ chrome.runtime.onMessage.addListener((url, sender, sendResponse) => {
     sendResponse(cookiesResponse);
   });
   return true;
-})
+});

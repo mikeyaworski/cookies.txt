@@ -1,3 +1,16 @@
+// Create an offscreen document to handle downloads (for Chrome)
+async function createOffscreen() {
+  await chrome.offscreen.createDocument({
+    url: 'offscreen/index.html',
+    reasons: ['BLOBS'],
+    justification: 'Downloading cookie file from service worker'
+  });
+}
+
+chrome.offscreen?.hasDocument((hasDoc) => {
+  if (!hasDoc) createOffscreen();
+});
+
 function formatCookie(co) {
   return [
     [
@@ -31,11 +44,28 @@ async function getCookiesResponse(options = {}) {
   return data.join('');
 }
 
-chrome.runtime.onMessage.addListener((url, sender, sendResponse) => {
-  getCookiesResponse({
-    url: decodeURIComponent(url) || undefined
-  }).then(cookiesResponse => {
-    sendResponse(cookiesResponse);
-  });
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.type === 'DOWNLOAD') {
+    getCookiesResponse({
+      url: msg.url ? decodeURIComponent(msg.url) : undefined
+    }).then(cookiesResponse => {
+      if (URL.createObjectURL) { // Firefox
+        const blob = new Blob([cookiesResponse], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        chrome.downloads.download({
+          url: url,
+          filename: 'cookies.txt',
+          saveAs: true,
+        }, () => {
+          URL.revokeObjectURL(url);
+        });
+      } else { // Chrome
+        chrome.runtime.sendMessage({
+          type: 'OFFSCREEN_DOWNLOAD',
+          data: cookiesResponse,
+        });
+      }
+    });
+  }
   return true;
 });

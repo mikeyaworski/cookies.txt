@@ -26,6 +26,8 @@
     "<all_urls>"
   ],
   "permissions": [
+    "offscreen",
+    "downloads",
     "cookies"
   ]
 }

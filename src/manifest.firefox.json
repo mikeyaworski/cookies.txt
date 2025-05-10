@@ -12,6 +12,11 @@
       "background.js"
     ]
   },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "cookies-txt@mikeyaworski.com"
+    }
+  },
   "action": {
     "default_title": "Export cookies",
     "default_icon": {
@@ -28,6 +33,7 @@
     "<all_urls>"
   ],
   "permissions": [
+    "downloads",
     "cookies"
   ]
 }

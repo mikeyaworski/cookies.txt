@@ -57,7 +57,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           filename: 'cookies.txt',
           saveAs: true,
         }, () => {
-          URL.revokeObjectURL(url);
+          // Revoke the object URL after a delay to allow the download to complete
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
         });
       } else { // Chrome
         chrome.runtime.sendMessage({

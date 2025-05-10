@@ -8,6 +8,7 @@ chrome.runtime.onMessage.addListener((msg) => {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Revoke the object URL after a delay to allow the download to complete
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
   }
 });
